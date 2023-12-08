@@ -68,10 +68,10 @@
 
             <div class="row no-wrap items-center tw-space-x-2">
               <div class="col">
-                <q-input filled v-model="body.fone" label="Fone" />
+                <q-input filled v-model="body.fone" label="Fone" type="tel"/>
               </div>
               <div class="col">
-                <q-input filled v-model="body.whatsapp" label="Whatsapp" />
+                <q-input filled v-model="body.whatsapp" label="Whatsapp" type="tel"/>
               </div>
             </div>
           </div>
@@ -172,7 +172,6 @@ export default defineComponent({
     })
 
     const handleUserSave = async () => {
-      console.log('handleUserSave');
       try {
         loading.value = true;
 

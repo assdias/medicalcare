@@ -1,7 +1,9 @@
 <template>
   <q-page class="row items-center justify-evenly">
-    <q-card class="my-card">
-      <q-img src="~assets/logo.webp"/>
+    <q-card class="my-card" flat>
+      <div class="text-center tw-h-40">
+        <q-img src="~assets/logo.webp"  style="height: 200px; max-width: 200px"/>
+      </div>
       <q-card-section>
         <div class="text-h6">MedicalCare</div>
         <div class="text-subtitle2">Seus planos em um só lugar</div>
@@ -9,7 +11,15 @@
       <q-card-section>
         <q-form class="tw-space-y-5" autofocus greedy @submit="handleSubmit">
           <q-input filled v-model="body.email" type="email" label="E-mail" />
-          <q-input filled v-model="body.password" type="password" label="Senha" />
+          <q-input filled v-model="body.password" :type="isPwd ? 'password' : 'text'" label="Senha">
+            <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+          </q-input>
 
           <q-btn
               v-bind="{ ...$themeBtnPrimary }"
@@ -25,6 +35,8 @@
                 <q-spinner-dots />
               </template>
             </q-btn>
+
+            <div class="text-center tw-text-gray-400">Não tem uma conta? <a class="text-primary tw-font-semibold"  @click="$router.replace('/createaccount')">Inscreva-se aqui</a></div>
 
         </q-form>
       </q-card-section>
@@ -46,6 +58,7 @@ export default defineComponent({
     const authStore = useAuthStore();
     const loading = ref(false);
     const success = ref(false);
+    const isPwd = ref(true);
     const body = ref({
       email: '',
       password: ''
@@ -84,10 +97,9 @@ export default defineComponent({
       } finally {
         loading.value = false;
       }
-
     };
 
-    return { loading, body, handleSubmit };
+    return { loading, isPwd, body, handleSubmit };
   }
 });
 </script>

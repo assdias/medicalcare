@@ -36,7 +36,7 @@ export default function useApi(endPoint: string) {
     }
   };
 
-  const get = async (query: string) => {
+  const get = async (query = '') => {
     try {
       config();
 

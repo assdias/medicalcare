@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf" class="tw-bg-gradient-to-r tw-from-primary  tw-via-teal-300 tw-to-secondary ">
+  <q-layout view="lHh Lpr lFf" class="theme-backgroud">
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -12,15 +12,8 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   name: 'MainLayout',
 
-
-  setup () {
-
-    return {
-
-    }
-  }
+  setup() {
+    return {};
+  },
 });
 </script>
-
-
-

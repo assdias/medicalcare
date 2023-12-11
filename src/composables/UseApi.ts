@@ -16,10 +16,21 @@ export default function useApi(endPoint: string) {
       config();
 
       const { data } = await api.post(endPoint, body);
+      return data;
+    } catch (error: any) {
+      throw new Error(error.toJSON().message);
+    }
+  };
+
+  const put = async (id: number, body: any) => {
+    try {
+      config();
+
+      const { data } = await api.put(`${endPoint}/${id}`, body);
 
       return data;
     } catch (error: any) {
-      throw new Error(error.message);
+      throw new Error(error.toJSON().message);
     }
   };
 
@@ -31,8 +42,7 @@ export default function useApi(endPoint: string) {
 
       return data;
     } catch (error: any) {
-      console.log(error.message);
-      throw new Error(error.message);
+      throw new Error(error.toJSON().message);
     }
   };
 
@@ -44,7 +54,7 @@ export default function useApi(endPoint: string) {
 
       return data;
     } catch (error: any) {
-      throw new Error(error.message);
+      throw new Error(error.toJSON().message);
     }
   };
 
@@ -56,9 +66,22 @@ export default function useApi(endPoint: string) {
 
       return data;
     } catch (error: any) {
-      throw new Error(error.message);
+      throw new Error(error.toJSON().message);
     }
   };
+
+  const remove = async (id: any) => {
+    try {
+      config();
+
+      const { data } = await api.delete(`${endPoint}/${id}`);
+
+      return data;
+    } catch (error: any) {
+      throw new Error(error.toJSON().message);
+    }
+  };
+
   /*
   const uploadImg = async (file: any) => {
     try {
@@ -94,6 +117,9 @@ export default function useApi(endPoint: string) {
     show,
     get,
     patch,
+    put,
+    remove,
+
     // uploadImg,
     // getUrlPublic,
   };

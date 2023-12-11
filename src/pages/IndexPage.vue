@@ -2,7 +2,10 @@
   <q-page class="row items-center justify-evenly">
     <q-card class="my-card" flat>
       <div class="text-center tw-h-40">
-        <q-img src="~assets/logo.webp"  style="height: 200px; max-width: 200px"/>
+        <q-img
+          src="~assets/logo.webp"
+          style="height: 200px; max-width: 200px"
+        />
       </div>
       <q-card-section>
         <div class="text-h6">MedicalCare</div>
@@ -10,34 +13,60 @@
       </q-card-section>
       <q-card-section>
         <q-form class="tw-space-y-5" autofocus greedy @submit="handleSubmit">
-          <q-input filled v-model="body.email" type="email" label="E-mail" />
-          <q-input filled v-model="body.password" :type="isPwd ? 'password' : 'text'" label="Senha">
+          <q-input
+            v-bind="{ ...$themeInputLowercase }"
+            v-model="body.email"
+            type="email"
+            label="E-mail"
+            autofocus
+            lazy-rules
+            :rules="[(val) => (val && val.length > 0) || 'Informe um E-mail']"
+          />
+
+          <q-input
+            v-bind="{ ...$themeInput }"
+            v-model="body.password"
+            :type="isPwd ? 'password' : 'text'"
+            label="Senha"
+            lazy-rules
+            :rules="[
+              (val) =>
+                (val && val.length >= 8) ||
+                'Informe uma senha com no mínimo 8 caracteres',
+            ]"
+          >
             <template v-slot:append>
-                <q-icon
-                  :name="isPwd ? 'visibility_off' : 'visibility'"
-                  class="cursor-pointer"
-                  @click="isPwd = !isPwd"
-                />
-              </template>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
           </q-input>
 
           <q-btn
-              v-bind="{ ...$themeBtnPrimary }"
-              :loading="loading"
-              :flat="false"
-              size="lg"
-              unelevated
-              label="Entrar"
-              class="full-width"
-              type="submit"
+            v-bind="{ ...$themeBtnPrimary }"
+            :loading="loading"
+            :flat="false"
+            size="lg"
+            unelevated
+            label="Entrar"
+            class="full-width"
+            type="submit"
+          >
+            <template v-slot:loading>
+              <q-spinner-dots />
+            </template>
+          </q-btn>
+
+          <div class="text-center tw-text-gray-400">
+            Não tem uma conta?
+            <a
+              class="text-primary tw-font-semibold tw-cursor-pointer"
+              @click="$router.replace('/createaccount')"
+              >Inscreva-se aqui</a
             >
-              <template v-slot:loading>
-                <q-spinner-dots />
-              </template>
-            </q-btn>
-
-            <div class="text-center tw-text-gray-400">Não tem uma conta? <a class="text-primary tw-font-semibold"  @click="$router.replace('/createaccount')">Inscreva-se aqui</a></div>
-
+          </div>
         </q-form>
       </q-card-section>
     </q-card>
@@ -49,10 +78,11 @@ import { defineComponent, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth-store';
 import useNotify from 'src/composables/UseNotify';
+import { tipo } from 'src/interfaces';
 
 export default defineComponent({
   name: 'IndexPage',
-  setup () {
+  setup() {
     const { notifyError, notifySuccess } = useNotify();
     const router = useRouter();
     const authStore = useAuthStore();
@@ -61,7 +91,7 @@ export default defineComponent({
     const isPwd = ref(true);
     const body = ref({
       email: '',
-      password: ''
+      password: '',
     });
 
     onMounted(() => {
@@ -81,26 +111,25 @@ export default defineComponent({
           notifySuccess('Seja bem-vindo ....');
         }
 
-        if (authStore.user.tipo == 'Beneficiário') {
-          router.push('/beneficiario')
-        } else if (authStore.user.tipo == 'Prestador') {
+        if (authStore.user.tipo == tipo.BENEFICIARIO) {
+          router.push('/beneficiario');
+        } else if (authStore.user.tipo == tipo.PRESTADOR) {
           router.push('/prestador');
-        } else if (authStore.user.tipo == 'Operador') {
+        } else if (authStore.user.tipo == tipo.OPERADOR) {
           router.push('/operador');
         } else {
           notifyError('Tipo do usuário não definido.');
           router.push('/');
         }
-
       } catch (error: any) {
-        notifyError(error);
+        notifyError(error.message);
       } finally {
         loading.value = false;
       }
     };
 
     return { loading, isPwd, body, handleSubmit };
-  }
+  },
 });
 </script>
 

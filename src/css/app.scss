@@ -1,1 +1,4 @@
 // app global css in SCSS form
+.theme-backgroud {
+  @apply tw-bg-gradient-to-r tw-from-primary tw-via-teal-300 tw-to-secondary;
+}

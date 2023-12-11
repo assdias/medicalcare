@@ -1,98 +1,166 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated class="tw-bg-gradient-to-r tw-from-primary  tw-via-teal-300 tw-to-secondary tw-h-52">
+    <q-header
+      elevated
+      class="tw-bg-gradient-to-r tw-from-primary tw-via-teal-300 tw-to-secondary tw-h-52"
+    >
       <q-toolbar>
         <q-avatar>
-        <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+          <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
         </q-avatar>
-        <q-toolbar-title>
-          Medical Care
-        </q-toolbar-title>
+        <q-toolbar-title> Medical Care </q-toolbar-title>
 
         <q-btn flat round dense icon="person" @click="ShowUser = true" />
         <q-btn flat round dense icon="logout" @click="handleLogout" />
       </q-toolbar>
 
-
       <div class="flex justify-center tw-w-full">
         <div class="text-center tw-w-full">
-          <q-img class="tw-rounded-full tw-border-2 tw-border-white"
+          <q-img
+            class="tw-rounded-full tw-border-2 tw-border-white"
             :src="imageHeader"
-            :placeholder-src="(user.tipo == 'Beneficiário') ? 'img/perfil.jpg' : 'img/seulogo.webp'"
+            :placeholder-src="
+              user.tipo == tipo.BENEFICIARIO
+                ? 'img/perfil.jpg'
+                : 'img/seulogo.webp'
+            "
             spinner-color="white"
             style="height: 110px; max-width: 110px"
             @click="ShowUser = true"
           />
-          <p class="tw-text-sm tw-font-semibold tw-mt-1">Olá, {{ user.name }}</p>
+          <p class="tw-text-sm tw-font-semibold tw-mt-1">
+            Olá, {{ user.name }}
+          </p>
           <p class="tw-text-xs tw-font-light">{{ user.cpf_cnpj }}</p>
         </div>
       </div>
     </q-header>
 
-    <q-dialog v-model="ShowUser" persistent>
+    <q-dialog v-model="ShowUser" persistent allowFocusOutside>
+      <q-card class="my-card tw-min-h-min" flat>
+        <div class="theme-backgroud tw-pb-3">
+          <q-card-section class="tw-pb-0">
+            <div class="text-h6 text-white tw-text-ellipsis">
+              {{ user.email }}
+            </div>
+            <div class="text-subtitle2 text-white">{{ user.tipo }}</div>
+          </q-card-section>
 
-      <q-card class="my-card" flat >
-        <div class="tw-bg-gradient-to-r tw-from-primary  tw-via-teal-300 tw-to-secondary tw-pb-3">
-        <q-card-section class="tw-pb-0">
-        <div class="text-h6 text-white tw-text-ellipsis">{{ user.email }}</div>
-        <div class="text-subtitle2 text-white">{{ user.tipo }}</div>
-      </q-card-section>
-      <div class="text-center tw-w-full">
-        <q-img :src="imageFile" class="tw-rounded-full tw-border-2 tw-border-white"
-          :placeholder-src="(user.tipo == 'Beneficiário') ? 'img/perfil.jpg' : 'img/seulogo.webp'"
-          style="height: 170px; max-width: 170px">
-        </q-img>
-      </div>
-    </div>
+          <div class="text-center tw-w-full">
+            <q-img
+              :src="imageFile"
+              class="tw-rounded-full tw-border-2 tw-border-white"
+              :placeholder-src="
+                user.tipo == tipo.BENEFICIARIO
+                  ? 'img/perfil.jpg'
+                  : 'img/seulogo.webp'
+              "
+              style="height: 170px; max-width: 170px"
+            >
+            </q-img>
+          </div>
+        </div>
         <q-card-section>
           <q-btn
             fab
             color="primary"
             icon="edit"
             class="absolute"
-            style="top: 0; right: 12px; transform: translateY(-50%);"
-             @click="handleUpload()"
+            style="top: 0; right: 12px; transform: translateY(-50%)"
+            @click="handleUpload()"
           />
           <q-form autofocus greedy>
             <div class="tw-space-y-2">
-            <div class="row no-wrap items-center">
-              <div class="col">
-                <q-input filled v-model="body.name" label="Nome" />
+              <div class="row no-wrap items-center">
+                <div class="col">
+                  <q-input
+                    v-bind="{ ...$themeInputUppercase }"
+                    v-model="body.name"
+                    label="Nome"
+                    maxlength="100"
+                    lazy-rules
+                    autofocus
+                    :rules="[
+                      (val) => (val && val.length > 0) || 'Informe seu nome',
+                    ]"
+                  />
+                </div>
               </div>
-            </div>
-            <div class="row no-wrap items-center">
-              <div class="col">
-                <q-input filled v-model="body.cpf_cnpj" :label="(user.tipo == 'Beneficiário') ? 'CPF' : 'CNPJ'" />
+              <div class="row no-wrap items-center">
+                <div class="col">
+                  <q-input
+                    v-bind="{ ...$themeInput }"
+                    v-model="body.cpf_cnpj"
+                    :label="user.tipo == tipo.BENEFICIARIO ? 'CPF' : 'CNPJ'"
+                    :maxlength="user.tipo == tipo.BENEFICIARIO ? 14 : 18"
+                    :mask="
+                      user.tipo == tipo.BENEFICIARIO
+                        ? '###.###.###-##'
+                        : '##.###.###/####-##'
+                    "
+                    lazy-rules
+                    :rules="[
+                      (val) =>
+                        (val && val.length > 0) ||
+                        (user.tipo == tipo.BENEFICIARIO
+                          ? 'Informe um CPF'
+                          : 'Informe um CNPJ'),
+                    ]"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div class="row no-wrap items-center tw-space-x-2">
-              <div class="col">
-                <q-input filled v-model="body.fone" label="Fone" type="tel"/>
-              </div>
-              <div class="col">
-                <q-input filled v-model="body.whatsapp" label="Whatsapp" type="tel"/>
+              <div class="row no-wrap items-center tw-space-x-2">
+                <div class="col">
+                  <q-input
+                    v-bind="{ ...$themeInput }"
+                    v-model="body.fone"
+                    label="Fone"
+                    type="tel"
+                  />
+                </div>
+                <div class="col">
+                  <q-input
+                    v-bind="{ ...$themeInput }"
+                    v-model="body.whatsapp"
+                    label="Whatsapp"
+                    type="tel"
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        </q-form>
+          </q-form>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
           <div class="text-caption text-grey">
-            O e-mail associado a esta conta é: <span class="tw-text-gray-500">{{ user.email }}</span>
+            O e-mail associado a esta conta é:
+            <span class="tw-text-gray-500">{{ user.email }}</span>
           </div>
         </q-card-section>
 
         <q-separator />
 
         <q-card-actions align="right">
-          <q-btn flat color="primary" label="Salvar" :loading="loading" icon="done" @click="handleUserSave">
+          <q-btn
+            flat
+            color="primary"
+            label="Salvar"
+            :loading="loading"
+            icon="done"
+            @click="handleUserSave"
+          >
             <template v-slot:loading>
               <q-spinner-dots />
             </template>
           </q-btn>
-          <q-btn v-close-popup flat color="negative" label="Sair" icon="close"/>
+          <q-btn
+            v-close-popup
+            flat
+            color="negative"
+            label="Sair"
+            icon="close"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -109,11 +177,11 @@ import { useAuthStore } from 'src/stores/auth-store';
 import useNotify from 'src/composables/UseNotify';
 import useApi from 'src/composables/UseApi';
 import { useRouter } from 'vue-router';
+import { tipo } from 'src/interfaces';
 
 export default defineComponent({
   name: 'MainLayoutAuth',
-
-  setup () {
+  setup() {
     const router = useRouter();
     const user = useAuthStore().user;
     const { notifyError, notifySuccess, notifyInfo } = useNotify();
@@ -122,12 +190,12 @@ export default defineComponent({
     const body = ref({
       name: '',
       password: '',
-      cpf_cnpj:'',
+      cpf_cnpj: '',
       cidade_id: 0,
-      image: {},
+      image: '',
     });
 
-    const handleUpload =  () => {
+    const handleUpload = () => {
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
       fileInput.accept = 'image/*';
@@ -139,24 +207,24 @@ export default defineComponent({
           imageFile.value = URL.createObjectURL(fileInput.files[0]);
 
           const object = new FormData();
-          object.append('content', fileInput.files[0])
+          object.append('content', fileInput.files[0]);
 
           try {
             loading.value = true;
             const data = await useApi('/upload/images').post(object);
             body.value.image = { ...data };
           } catch (error: any) {
-            notifyError(error);
+            notifyError(error.message);
           } finally {
             loading.value = false;
             document.body.removeChild(fileInput);
           }
-        })
-      })
+        });
+      });
     };
 
     onMounted(() => {
-      imageFile.value = (user.image && user.image.url) ? user.image.url : '';
+      imageFile.value = user.image && user.image.url ? user.image.url : '';
 
       body.value.name = user.name;
       body.value.password = '';
@@ -168,19 +236,21 @@ export default defineComponent({
 
     const imageHeader = computed(() => {
       const userImage = useAuthStore().user.image;
-      return (userImage && userImage.url) ? userImage.url : ''
-    })
+      return userImage && userImage.url ? userImage.url : '';
+    });
 
     const handleUserSave = async () => {
       try {
         loading.value = true;
+
+        body.value.name = body.value.name.toUpperCase();
 
         const data = await useApi('/user').patch(user.id, body.value);
         useAuthStore().updateUser(data);
 
         notifySuccess('Registro atualizado.');
       } catch (error: any) {
-        notifyError(error);
+        notifyError(error.message);
       } finally {
         loading.value = false;
       }
@@ -190,9 +260,10 @@ export default defineComponent({
       useAuthStore().logout();
       notifyInfo('Até breve... :)');
       router.push('/');
-    }
+    };
 
     return {
+      tipo,
       imageFile,
       ShowUser: ref(false),
       user,
@@ -202,8 +273,8 @@ export default defineComponent({
       handleUpload,
       imageHeader,
       handleLogout,
-    }
-  }
+    };
+  },
 });
 </script>
 

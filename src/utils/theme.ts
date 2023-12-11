@@ -19,7 +19,7 @@ const styleBtn = {
 
 const input = {
   ...styleInput,
-  counter: true,
+  counter: false,
   clearable: true,
 };
 

@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
 import useApi from 'src/composables/UseApi';
 import { LocalStorage } from 'quasar';
+import { getLocation } from 'src/utils/geolocation';
+import { tipo } from 'src/interfaces';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -12,6 +14,11 @@ export const useAuthStore = defineStore('auth', {
     user: {},
     token: '',
     email: '',
+
+    coords: {
+      lat: '',
+      lng: '',
+    },
   }),
 
   getters: {
@@ -32,10 +39,16 @@ export const useAuthStore = defineStore('auth', {
     getEmail: (state) => {
       return state.email;
     },
+
+    getCoords: (state) => {
+      return state.coords;
+    },
   },
 
   actions: {
     async login(email: string, password: string) {
+      this.logout();
+
       this.email = email;
 
       const data = await useApi('/auth/login').post({
@@ -48,21 +61,36 @@ export const useAuthStore = defineStore('auth', {
 
         await this.updateUser();
 
-        this.isLoggedIn = this.token !== '';
-        return this.token !== '';
+        return this.isLoggedIn;
       }
     },
 
     logout() {
       this.user = {};
       this.isLoggedIn = false;
+      this.token = '';
     },
 
     async updateUser() {
       const me = await useApi('/auth/me').get('');
       if (me) {
         this.user = me;
+        this.isLoggedIn = this.token !== '';
+
+        if (this.user.tipo == tipo.BENEFICIARIO) {
+          await useApi('/user-location').put(this.user.id, {
+            location: useAuthStore().coords,
+          });
+        }
       }
+    },
+
+    setToken(authToken: string) {
+      this.token = authToken;
+    },
+
+    getCurrentPosition() {
+      getLocation(this.coords);
     },
   },
 
@@ -76,6 +104,7 @@ export const useAuthStore = defineStore('auth', {
       'isLoggedIn',
       'limit',
       'email',
+      'coords',
     ],
     storage: {
       getItem(key: string) {

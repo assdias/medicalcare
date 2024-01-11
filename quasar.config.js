@@ -110,8 +110,8 @@ module.exports = configure(function (/* ctx */) {
           spinnerColor: 'light-blue-4',
           messageColor: 'grey-4',
           spinner: 'QSpinnerDots',
-          html: true,
-          message: "<span class='text-h5'>Aguarde, carregando...</span>",
+          //html: true,
+          //message: "<span class='text-h5'>Aguarde, carregando...</span>",
         },
         loadingBar: {
           color: 'warning',

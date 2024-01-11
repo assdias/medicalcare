@@ -2,3 +2,7 @@
 .theme-backgroud {
   @apply tw-bg-gradient-to-r tw-from-primary tw-via-teal-300 tw-to-secondary;
 }
+
+.list-dialog {
+  width: 89% !important;
+}

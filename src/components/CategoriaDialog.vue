@@ -28,31 +28,30 @@
         align="justify"
         narrow-indicator
       >
-        <!-- <q-tab name="list" label="Listagem" />
-        <q-tab name="cad" label="Cadastro" />-->
       </q-tabs>
 
       <q-separator />
 
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="list">
-          <q-scroll-area style="height: 400px; width: 100%">
-            <div
-              v-show="categorias.length === 0"
-              class="tw-text-center tw-text-gray-400"
-            >
-              Nenhum registro.
-            </div>
-            <q-list
-              v-for="(item, index) in categorias"
-              :index="index"
-              :key="item.id"
+          <div
+            v-if="categorias.length === 0"
+            class="tw-text-center tw-text-gray-400"
+          >
+            Nenhum registro.
+          </div>
+          <div v-else>
+            <q-virtual-scroll
+              style="max-height: 400px"
+              :items="categorias"
+              v-slot="{ item, index }"
             >
               <q-item
+                :key="index"
                 clickable
                 class="tw-border-t-2 tw-border-t-primary tw-shadow-md tw-mt-4"
               >
-                <q-item-section avatar top>
+                <q-item-section avatar center class="gt-xs">
                   <q-icon name="category" size="34px" class="text-grey-8" />
                 </q-item-section>
 
@@ -63,9 +62,8 @@
                 </q-item-section>
 
                 <q-item-section side center>
-                  <div class="text-grey-8 q-gutter-xs">
+                  <div class="text-grey-8 q-gutter-xs flex tw-flex-col">
                     <q-btn
-                      class="gt-xs"
                       size="12px"
                       flat
                       dense
@@ -76,7 +74,6 @@
                       @click="onRemove(index, item.id)"
                     />
                     <q-btn
-                      class="gt-xs"
                       size="12px"
                       flat
                       dense
@@ -87,8 +84,8 @@
                   </div>
                 </q-item-section>
               </q-item>
-            </q-list>
-          </q-scroll-area>
+            </q-virtual-scroll>
+          </div>
         </q-tab-panel>
 
         <q-tab-panel name="cad">

@@ -11,7 +11,7 @@
           @click="tab = 'list'"
           v-show="tab == 'cad'"
         />
-        <div>Classificação</div>
+        <div>Especialidade</div>
 
         <q-space />
 
@@ -38,13 +38,13 @@
         <q-tab-panel name="list">
           <q-scroll-area style="height: 400px; width: 100%">
             <div
-              v-show="classificacoes.length === 0"
+              v-show="especialidades.length === 0"
               class="tw-text-center tw-text-gray-400"
             >
               Nenhum registro.
             </div>
             <q-list
-              v-for="(item, index) in classificacoes"
+              v-for="(item, index) in especialidades"
               :index="index"
               :key="item.id"
             >
@@ -53,11 +53,7 @@
                 class="tw-border-t-2 tw-border-t-primary tw-shadow-md tw-mt-4"
               >
                 <q-item-section avatar top>
-                  <q-icon
-                    name="sort_by_alpha"
-                    size="34px"
-                    class="text-grey-8"
-                  />
+                  <q-icon name="science" size="34px" class="text-grey-8" />
                 </q-item-section>
 
                 <q-item-section center>
@@ -99,8 +95,8 @@
           <q-form class="tw-space-y-5" ref="formCadRef">
             <q-input
               v-bind="{ ...$themeInputUppercase }"
-              v-model="classificacao.nome"
-              label="Classificação"
+              v-model="especialidade.nome"
+              label="Especialidade"
               maxlength="100"
               autofocus
               lazy-rules
@@ -171,19 +167,19 @@ export default {
     const formCadRef = ref(null);
     const loading = ref(false);
     const { notifyError, notifySuccess } = useNotify();
-    const classificacaoIndex = ref(-1);
-    const classificacao = ref({
+    const especialidadeIndex = ref(-1);
+    const especialidade = ref({
       id: null,
       nome: '',
     });
 
-    const classificacoes = ref(null);
-    classificacoes.value = props.list;
+    const especialidades = ref(null);
+    especialidades.value = props.list;
 
     const onShowEdit = (index, item) => {
-      classificacaoIndex.value = index;
-      classificacao.value.id = item.id;
-      classificacao.value.nome = item.nome;
+      especialidadeIndex.value = index;
+      especialidade.value.id = item.id;
+      especialidade.value.nome = item.nome;
       tab.value = 'cad';
     };
 
@@ -198,8 +194,8 @@ export default {
         try {
           $q.loading.show({ message: 'Aguarde, excluindo...' });
 
-          await useApi('/classificacao').remove(id);
-          classificacoes.value.splice(index, 1);
+          await useApi('/especialidade').remove(id);
+          especialidades.value.splice(index, 1);
 
           notifySuccess('Registro removido');
         } catch (error) {
@@ -212,9 +208,9 @@ export default {
 
     return {
       loading,
-      classificacoes,
+      especialidades,
       props,
-      classificacao,
+      especialidade,
       tab,
       msg,
       formCadRef,
@@ -227,8 +223,8 @@ export default {
       onDialogHide,
 
       onNovo() {
-        classificacao.value.id = null;
-        classificacao.value.nome = '';
+        especialidade.value.id = null;
+        especialidade.value.nome = '';
         tab.value = 'cad';
       },
 
@@ -243,22 +239,22 @@ export default {
             try {
               loading.value = true;
 
-              classificacao.value.nome = classificacao.value.nome.toUpperCase();
+              especialidade.value.nome = especialidade.value.nome.toUpperCase();
 
-              if (classificacao.value.id > 0) {
-                await useApi('/classificacao').patch(
-                  classificacao.value.id,
-                  classificacao.value
+              if (especialidade.value.id > 0) {
+                await useApi('/especialidade').patch(
+                  especialidade.value.id,
+                  especialidade.value
                 );
-                classificacoes.value[classificacaoIndex.value] =
-                  classificacao.value;
-                classificacaoIndex.value = -1;
+                especialidades.value[especialidadeIndex.value] =
+                  especialidade.value;
+                especialidadeIndex.value = -1;
                 notifySuccess('Registro atualizado');
               } else {
-                const data = await useApi('/classificacao').post(
-                  classificacao.value
+                const data = await useApi('/especialidade').post(
+                  especialidade.value
                 );
-                classificacoes.value.push(data);
+                especialidades.value.push(data);
                 notifySuccess('Registro salvo');
               }
 

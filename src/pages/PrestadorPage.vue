@@ -21,13 +21,21 @@
                 ><q-badge rounded color="warning" label="999+"
               /></q-item-section>
             </q-item>
-            <q-item clickable v-ripple class="bg-secondary tw-text-gray-100">
+            <q-item
+              clickable
+              v-ripple
+              class="bg-secondary tw-text-gray-100"
+              @click="onShowServico"
+            >
               <q-item-section avatar>
                 <q-icon name="diversity_1" />
               </q-item-section>
               <q-item-section>Serviços</q-item-section>
-              <q-item-section side
-                ><q-badge rounded color="warning" label="1"
+              <q-item-section side v-if="servicos.length > 0"
+                ><q-badge
+                  rounded
+                  color="warning"
+                  :label="servicos.length > 100 ? '100+' : servicos.length"
               /></q-item-section>
             </q-item>
           </q-list>
@@ -38,13 +46,51 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { ref, defineComponent, onMounted } from 'vue';
+import { useQuasar } from 'quasar';
 import { tipo } from 'src/interfaces';
+import ServicoDialog from 'src/components/ServicoDialog.vue';
+import useNotify from 'src/composables/UseNotify';
+import useApi from 'src/composables/UseApi';
+import type { IServico } from 'src/interfaces/servico';
 
 export default defineComponent({
   name: 'PrestadorPage',
   setup() {
-    return { tipo };
+    const $q = useQuasar();
+    const { notifyError } = useNotify();
+    const servicos = ref<IServico[]>([]);
+
+    const loadServicos = async () => {
+      try {
+        $q.loading.show();
+        servicos.value = await useApi('/servico').get();
+      } catch (error) {
+        notifyError(error.message);
+      } finally {
+        $q.loading.hide();
+      }
+    };
+
+    onMounted(async () => {
+      await loadServicos();
+    });
+
+    const onShowServico = async () => {
+      $q.dialog({
+        component: ServicoDialog,
+        componentProps: {
+          list: servicos.value,
+        },
+        cancel: true,
+      });
+    };
+
+    return {
+      tipo,
+      servicos,
+      onShowServico,
+    };
   },
 });
 </script>

@@ -77,11 +77,13 @@ export const useAuthStore = defineStore('auth', {
         this.user = me;
         this.isLoggedIn = this.token !== '';
 
+        /*TODO: TESTAR
         if (this.user.tipo == tipo.BENEFICIARIO) {
           await useApi('/user-location').put(this.user.id, {
             location: useAuthStore().coords,
           });
         }
+        */
       }
     },
 

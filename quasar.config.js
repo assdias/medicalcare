@@ -104,7 +104,6 @@ module.exports = configure(function (/* ctx */) {
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
     framework: {
       config: {
-        lang: 'pt-BR',
         loading: {
           delay: 600,
           spinnerSize: 80,
@@ -121,7 +120,7 @@ module.exports = configure(function (/* ctx */) {
         brand: brand,
       },
       // iconSet: 'material-icons', // Quasar icon set
-      // lang: 'en-US', // Quasar language pack
+      lang: 'pt-BR', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact
       // (like functional components as one of the examples),

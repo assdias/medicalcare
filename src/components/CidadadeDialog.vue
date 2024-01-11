@@ -63,7 +63,7 @@
                   <q-item-label caption lines="1"> {{ item.uf }} </q-item-label>
                 </q-item-section>
 
-                <q-item-section top side>
+                <q-item-section side center>
                   <div class="text-grey-8 q-gutter-xs">
                     <q-btn
                       class="gt-xs"

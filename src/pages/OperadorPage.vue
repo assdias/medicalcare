@@ -52,7 +52,12 @@
               </q-item-section>
               <q-item-section>Clsssificação</q-item-section>
             </q-item>
-            <q-item clickable v-ripple class="bg-secondary tw-text-gray-100">
+            <q-item
+              clickable
+              v-ripple
+              class="bg-secondary tw-text-gray-100"
+              @click="onShowEspecialidade"
+            >
               <q-item-section avatar>
                 <q-icon name="science" />
               </q-item-section>
@@ -83,12 +88,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent /*, onMounted, ref */ } from 'vue';
 import { useQuasar } from 'quasar';
 import { tipo } from 'src/interfaces';
 import CidadadeDialog from 'src/components/CidadadeDialog.vue';
 import CategoriaDialog from 'src/components/CategoriaDialog.vue';
 import ClassificacaoDialog from 'src/components/ClassificacaoDialog.vue';
+import EspecialidadeDialog from 'src/components/EspecialidadeDialog.vue';
 
 import useNotify from 'src/composables/UseNotify';
 import useApi from 'src/composables/UseApi';
@@ -102,6 +108,28 @@ export default defineComponent({
     return {
       tipo,
 
+      async onShowEspecialidade() {
+        try {
+          $q.loading.show();
+          const especialidades = await useApi('/especialidade').get();
+
+          $q.dialog({
+            component: EspecialidadeDialog,
+
+            // props forwarded to your custom component
+            componentProps: {
+              list: especialidades,
+            },
+            cancel: true,
+          }).onOk((data) => {
+            // console.log('>>>> OK, received', data)
+          });
+        } catch (error) {
+          notifyError(error.message);
+        } finally {
+          $q.loading.hide();
+        }
+      },
       async onShowClassificacao() {
         try {
           $q.loading.show();

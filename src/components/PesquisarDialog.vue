@@ -107,7 +107,7 @@
                 :clearable="false"
                 maxlength="100"
                 counter
-                debounce="600"
+                debounce="1000"
                 :loading="loadingTextInput"
                 :disable="disableText"
                 @input="handleInput"
@@ -354,7 +354,7 @@ export default {
     const breadcrumbCategoria = ref('');
 
     const offset = ref(0);
-    const limit = 3; // Adjust the limit as needed
+    const limit = 25; // Adjust the limit as needed
     const itemsTotal = ref(0);
     const isLoadingMore = ref(false);
 
@@ -423,12 +423,10 @@ export default {
     });
 
     const loadMoreItems = async (index, done) => {
-      if (itemsTotal.value > 0 && itemsTotal.value === items.value?.length) {
-        done();
-        return;
-      }
-
       try {
+        if (itemsTotal.value > 0 && itemsTotal.value === items.value?.length)
+          return;
+
         const result: IResult = (await fetchServico()) as IResult;
 
         itemsTotal.value = result.itemsTotal;
@@ -439,7 +437,7 @@ export default {
           offset.value += limit;
         }
       } finally {
-        done();
+        if (done) done();
       }
     };
 
@@ -447,11 +445,22 @@ export default {
       $q.loadingBar.start();
 
       result.value = null;
-      const _params = `?text=${params.value.text}&cidade_id=${params.value.cidade_id}&categoria_id=${params.value.categoria_id}&limit=${limit}&offset=${offset.value}`;
+      const _text = `%${params.value.text
+        .trim()
+        .toLocaleUpperCase()
+        .replace(' ', '%')}%`;
+
+      const _params = {
+        text: _text,
+        cidade_id: params.value.cidade_id,
+        categoria_id: params.value.categoria_id,
+        limit: limit,
+        offset: offset.value,
+      };
 
       return new Promise((resolve) => {
         useApi('/servico-searche')
-          .get(_params)
+          .post(_params)
           .then((data: IResult) => {
             resolve(data);
           })
@@ -465,16 +474,17 @@ export default {
     };
 
     const handleInput = async () => {
-      if (itemsTotal.value > 0 && params.value.text.length === 9) {
-        itemsTotal.value = 0;
-        items.value = [];
-        return;
-      }
+      //  if (itemsTotal.value > 0 && params.value.text.length === 0) {
+      offset.value = 0;
+      itemsTotal.value = 0;
+      items.value = [];
+      //    return;
+      //  }
 
       if (params.value.text.length > 3) {
         try {
           loadingTextInput.value = true;
-          await loadMoreItems(0, false);
+          await loadMoreItems(0, null);
         } finally {
           loadingTextInput.value = false;
         }

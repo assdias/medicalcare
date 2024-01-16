@@ -149,7 +149,9 @@
                     </q-item-label>
                     <q-separator class="tw-my-3" />
                     <q-item-section>
-                      <div class="row tw-justify-end tw-space-x-5">
+                      <div
+                        class="row tw-justify-end tw-space-x-5 tw-items-center"
+                      >
                         <q-chip
                           size="lg"
                           outline
@@ -168,16 +170,10 @@
                         <q-btn
                           round
                           dense
-                          color="teal-6"
-                          icon="mdi-whatsapp"
-                          class="tw-w-9 tw-h-9"
-                        />
-                        <q-btn
-                          round
-                          dense
                           color="warning"
                           icon="send"
                           class="tw-w-9 tw-h-9"
+                          size="18px"
                         >
                           <q-tooltip class="bg-warning"
                             >Enviar solicitação</q-tooltip

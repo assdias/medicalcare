@@ -11,8 +11,8 @@
           @click="$router.replace('/')"
         />
         <q-card-section>
-          <div class="text-h5 tw-text-ellipsis">Junte-se a nós</div>
-          <div class="text-subtitle3 q-mt-md">
+          <div class="text-h5">Junte-se a nós</div>
+          <div class="text-subtitle3 q-mt-md tw-text-ellipsis tw-text-gray-500">
             Crie sua conta e tenha acesso aos melhores prestadores de saúde.
           </div>
         </q-card-section>
@@ -65,7 +65,12 @@
               label="Cidade"
               :options="optionsCidades"
               option-value="id"
-              option-label="nome"
+              :option-label="
+                (opt) =>
+                  Object(opt) === opt && 'nome' in opt
+                    ? `${opt.nome} - ${opt.uf}`
+                    : null
+              "
               emit-value
               map-options
               @filter="filterFn"

@@ -10,4 +10,5 @@ export enum tipo {
 
 export enum msg {
   REQUERIDO = 'Campo obrigatório',
+  PESQUISA = 'Digite no minimo 3 letras ou números',
 }

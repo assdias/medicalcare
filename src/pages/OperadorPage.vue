@@ -3,8 +3,10 @@
     <div class="q-mt-md">
       <q-card class="my-card bg-white" flat>
         <q-card-section>
-          <div class="text-h6 tw-text-ellipsis">{{ tipo.OPERADOR }}</div>
-          <div class="text-subtitle2">Configure sua rede</div>
+          <div class="text-h6">{{ tipo.OPERADOR }}</div>
+          <div class="text-subtitle2 tw-text-ellipsis tw-text-gray-500">
+            Configure sua rede
+          </div>
         </q-card-section>
         <q-card-section>
           <q-list separator class="tw-space-y-2 tw-text-lg">

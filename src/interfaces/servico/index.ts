@@ -1,7 +1,7 @@
 export interface IServico {
   id?: number | null;
   nome: string;
-  descricao?: string | null;
+  observacao?: string | null;
   categoria_id: number | null;
   referencia?: string;
   valor: number;

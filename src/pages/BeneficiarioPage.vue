@@ -3,9 +3,9 @@
     <div class="q-mt-md">
       <q-card class="my-card bg-white" flat>
         <q-card-section>
-          <div class="text-h6 tw-text-ellipsis">{{ tipo.BENEFICIARIO }}</div>
-          <div class="text-subtitle2">
-            Pesquise por médicos, expecialistas, clinicas...
+          <div class="text-h6">{{ tipo.BENEFICIARIO }}</div>
+          <div class="text-subtitle2 tw-text-ellipsis tw-text-gray-500">
+            Tudo que você precisa está aqui :)
           </div>
         </q-card-section>
         <q-card-section>
@@ -14,6 +14,7 @@
               clickable
               v-ripple
               class="bg-primary tw-text-gray-100 tw-mb-5"
+              @click="onPesquisar"
             >
               <q-item-section avatar>
                 <q-icon name="search" />
@@ -54,11 +55,28 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { tipo } from 'src/interfaces';
+import PesquisarDialog from 'src/components/PesquisarDialog.vue';
+import { useQuasar } from 'quasar';
 
 export default defineComponent({
   name: 'BeneficiarioPage',
   setup() {
-    return { tipo };
+    const $q = useQuasar();
+
+    const onPesquisar = () => {
+      $q.dialog({
+        component: PesquisarDialog,
+        componentProps: {
+          // list: servicos.value,
+        },
+        cancel: true,
+      });
+    };
+
+    return {
+      tipo,
+      onPesquisar,
+    };
   },
 });
 </script>

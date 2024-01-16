@@ -29,8 +29,6 @@
         align="justify"
         narrow-indicator
       >
-        <!-- <q-tab name="list" label="Listagem" />
-        <q-tab name="cad" label="Cadastro" />-->
       </q-tabs>
 
       <q-separator />
@@ -114,7 +112,7 @@
             />
             <q-input
               v-bind="{ ...$themeInput }"
-              v-model="servico.descricao"
+              v-model="servico.observacao"
               label="Descrição"
               type="textarea"
               maxlength="500"
@@ -130,6 +128,7 @@
               option-label="nome"
               emit-value
               map-options
+              clearable
               @filter="categoriaFilterFn"
               @filter-abort="categoriaAbortFilterFn"
               hint="Selecione uma categoria para o serviço."
@@ -241,7 +240,7 @@ export default defineComponent({
     const servicoIndex = ref(-1);
     const { list } = props;
     const servico = ref<IServico | null>(null);
-    const servicos = ref<IServico[]>(list);
+    const servicos = ref<IServico[] | null>(list);
     const optionsCategorias = ref(null);
     const loadingSelect = ref(false);
 
@@ -288,7 +287,7 @@ export default defineComponent({
       formData.append('prestador_id', useAuthStore().user.id);
       formData.append('nome', servico.value.nome.toUpperCase());
       formData.append('valor', servico.value.valor);
-      formData.append('descricao', servico.value.descricao);
+      formData.append('observacao', servico.value.observacao);
       formData.append('categoria_id', servico.value.categoria_id);
       formData.append('referencia', servico.value.referencia);
 

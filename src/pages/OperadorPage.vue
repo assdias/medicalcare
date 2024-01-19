@@ -103,6 +103,9 @@ import useApi from 'src/composables/UseApi';
 
 export default defineComponent({
   name: 'OperadorPage',
+  metaInfo: {
+    requiresOperador: true,
+  },
   setup() {
     const $q = useQuasar();
     const { notifyError } = useNotify();

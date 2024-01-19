@@ -14,7 +14,7 @@
               clickable
               v-ripple
               class="bg-primary tw-text-gray-100 tw-mb-5"
-              @click="onPesquisar"
+              @click="$router.push('/pesquisar')"
             >
               <q-item-section avatar>
                 <q-icon name="search" />
@@ -59,7 +59,10 @@ import PesquisarDialog from 'src/components/PesquisarDialog.vue';
 import { useQuasar } from 'quasar';
 
 export default defineComponent({
-  name: 'BeneficiarioPage',
+  name: 'PesquisarServicosPage',
+  metaInfo: {
+    requiresBeneficario: true,
+  },
   setup() {
     const $q = useQuasar();
 

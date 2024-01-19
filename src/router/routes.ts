@@ -25,13 +25,38 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'beneficiario',
         name: 'beneficiario',
-        component: () => import('pages/BeneficiarioPage.vue'),
+        component: () => import('pages/beneficiario/IndexPage.vue'),
       },
+      {
+        path: 'pesquisar',
+        name: 'pesquisar',
+        component: () => import('pages/beneficiario/PesquisarServicosPage.vue'),
+      },
+    ],
+    meta: {
+      requiresAuth: true,
+      requiresBeneficario: true,
+    },
+  },
+  {
+    path: '/',
+    component: () => import('layouts/MainLayoutAuth.vue'),
+    children: [
       {
         path: 'prestador',
         name: 'prestador',
         component: () => import('pages/PrestadorPage.vue'),
       },
+    ],
+    meta: {
+      requiresAuth: true,
+      requiresPrestador: true,
+    },
+  },
+  {
+    path: '/',
+    component: () => import('layouts/MainLayoutAuth.vue'),
+    children: [
       {
         path: 'operador',
         name: 'operador',
@@ -40,6 +65,7 @@ const routes: RouteRecordRaw[] = [
     ],
     meta: {
       requiresAuth: true,
+      requiresOperador: true,
     },
   },
 

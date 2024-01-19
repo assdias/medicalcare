@@ -39,31 +39,29 @@ export default route(function (/* { store, ssrContext } */) {
   Router.beforeEach((to, from, next) => {
     const { getLoggedIn, getUser } = useAuthStore();
 
-    if (to.matched.some((record) => record.meta.requiresAuth)) {
-      if (!getLoggedIn) {
-        next({
-          path: '/',
-        });
-      } else if (
-        getUser.tipo == tipo.BENEFICIARIO &&
-        to.name !== 'beneficiario'
-      ) {
-        next({
-          path: '/beneficiario',
-        });
-      } else if (getUser.tipo == tipo.PRESTADOR && to.name !== 'prestador') {
-        next({
-          path: '/prestador',
-        });
-      } else if (getUser.tipo == tipo.OPERADOR && to.name !== 'operador') {
-        next({
-          path: '/operador',
-        });
-      } else {
-        next();
-      }
+    if (to.meta.requiresAuth && !getLoggedIn) return next('/');
+    if (!to.meta.requiresAuth) return next();
+
+    if (
+      to.meta.requiresAuth &&
+      to.meta.requiresBeneficario &&
+      getUser.tipo === tipo.BENEFICIARIO
+    ) {
+      return next();
+    } else if (
+      to.meta.requiresAuth &&
+      to.meta.requiresPrestador &&
+      getUser.tipo === tipo.PRESTADOR
+    ) {
+      return next();
+    } else if (
+      to.meta.requiresAuth &&
+      to.meta.requiresOperador &&
+      getUser.tipo === tipo.OPERADOR
+    ) {
+      return next();
     } else {
-      next();
+      return next('/Unauthorized');
     }
   });
 

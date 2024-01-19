@@ -52,3 +52,7 @@ export function formatCel(val: string) {
     ? val.replace(/\D+/g, '').replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
     : '';
 }
+
+export function removerAcentos(str: string) {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}

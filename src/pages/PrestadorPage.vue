@@ -58,6 +58,9 @@ import type { IServico } from 'src/interfaces/servico';
 
 export default defineComponent({
   name: 'PrestadorPage',
+  metaInfo: {
+    requiresPrestador: true,
+  },
   setup() {
     const $q = useQuasar();
     const { notifyError } = useNotify();

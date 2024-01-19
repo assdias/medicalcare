@@ -2,7 +2,8 @@
   <q-layout view="lHh Lpr lFf">
     <q-header
       elevated
-      class="tw-bg-gradient-to-r tw-from-primary tw-via-teal-300 tw-to-secondary tw-h-52"
+      class="tw-bg-gradient-to-r tw-from-primary tw-via-teal-300 tw-to-secondary"
+      :class="showHeaderDetail ? 'tw-h-52' : ''"
     >
       <q-toolbar>
         <q-avatar>
@@ -14,7 +15,7 @@
         <q-btn flat round dense icon="logout" @click="handleLogout" />
       </q-toolbar>
 
-      <div class="flex justify-center tw-w-full">
+      <div class="flex justify-center tw-w-full" v-if="showHeaderDetail">
         <div class="text-center tw-w-full">
           <q-img
             class="tw-rounded-full tw-border-2 tw-border-white"
@@ -167,6 +168,14 @@
 
     <q-page-container>
       <router-view />
+      <!-- place QPageScroller at end of page -->
+      <q-page-scroller
+        position="bottom-right"
+        :scroll-offset="150"
+        :offset="[18, 18]"
+      >
+        <q-btn fab icon="keyboard_arrow_up" color="accent" />
+      </q-page-scroller>
     </q-page-container>
   </q-layout>
 </template>
@@ -178,9 +187,13 @@ import useNotify from 'src/composables/UseNotify';
 import useApi from 'src/composables/UseApi';
 import { useRouter } from 'vue-router';
 import { tipo } from 'src/interfaces';
+import { removerAcentos } from 'src/utils/stringUtils';
 
 export default defineComponent({
   name: 'MainLayoutAuth',
+  metaInfo: {
+    requiresAuth: true,
+  },
   setup() {
     const router = useRouter();
     const user = useAuthStore().user;
@@ -262,6 +275,13 @@ export default defineComponent({
       router.push('/');
     };
 
+    const showHeaderDetail = computed(() => {
+      return router.currentRoute.value.name
+        ?.toString()
+        .toLowerCase()
+        .includes(removerAcentos(user.tipo).toLowerCase());
+    });
+
     return {
       tipo,
       imageFile,
@@ -273,6 +293,7 @@ export default defineComponent({
       handleUpload,
       imageHeader,
       handleLogout,
+      showHeaderDetail,
     };
   },
 });

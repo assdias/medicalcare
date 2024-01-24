@@ -6,6 +6,7 @@
     :error="!!errorMessage"
     v-model="formattedValue"
     :label="label"
+    :dense="dense"
   />
 </template>
 
@@ -40,6 +41,10 @@ export default {
       type: Number,
       default: 0,
       required: false,
+    },
+    dense: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props) {

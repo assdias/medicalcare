@@ -19,25 +19,29 @@
                 <q-icon name="send" />
               </q-item-section>
               <q-item-section>Solicitações</q-item-section>
-              <q-item-section side
-                ><q-badge rounded color="warning" label="999+"
-              /></q-item-section>
+              <q-item-section side v-if="countSolicitacoes !== 0">
+                <q-badge
+                  rounded
+                  color="warning"
+                  :label="countSolicitacoes > 100 ? '100+' : countSolicitacoes"
+                />
+              </q-item-section>
             </q-item>
             <q-item
               clickable
               v-ripple
               class="bg-secondary tw-text-gray-100"
-              @click="onShowServico"
+              to="/servico"
             >
               <q-item-section avatar>
                 <q-icon name="diversity_1" />
               </q-item-section>
               <q-item-section>Serviços</q-item-section>
-              <q-item-section side v-if="servicos.length > 0"
+              <q-item-section side v-if="countServicos !== 0"
                 ><q-badge
                   rounded
                   color="warning"
-                  :label="servicos.length > 100 ? '100+' : servicos.length"
+                  :label="countServicos > 100 ? '100+' : countServicos"
               /></q-item-section>
             </q-item>
           </q-list>
@@ -48,13 +52,8 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted } from 'vue';
-import { useQuasar } from 'quasar';
+import { defineComponent, computed } from 'vue';
 import { tipo } from 'src/interfaces';
-import ServicoDialog from 'src/components/ServicoDialog.vue';
-import useNotify from 'src/composables/UseNotify';
-import useApi from 'src/composables/UseApi';
-import type { IServico } from 'src/interfaces/servico';
 
 export default defineComponent({
   name: 'PrestadorPage',
@@ -62,39 +61,18 @@ export default defineComponent({
     requiresPrestador: true,
   },
   setup() {
-    const $q = useQuasar();
-    const { notifyError } = useNotify();
-    const servicos = ref<IServico[]>([]);
-
-    const loadServicos = async () => {
-      try {
-        $q.loading.show();
-        servicos.value = await useApi('/servico').get();
-      } catch (error) {
-        notifyError(error.message);
-      } finally {
-        $q.loading.hide();
-      }
-    };
-
-    onMounted(async () => {
-      await loadServicos();
+    const countServicos = computed(() => {
+      return 0;
     });
 
-    const onShowServico = async () => {
-      $q.dialog({
-        component: ServicoDialog,
-        componentProps: {
-          list: servicos.value,
-        },
-        cancel: true,
-      });
-    };
+    const countSolicitacoes = computed(() => {
+      return 0;
+    });
 
     return {
+      countServicos,
+      countSolicitacoes,
       tipo,
-      servicos,
-      onShowServico,
     };
   },
 });

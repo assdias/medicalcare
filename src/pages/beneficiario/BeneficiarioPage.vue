@@ -55,30 +55,15 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { tipo } from 'src/interfaces';
-import PesquisarDialog from 'src/components/PesquisarDialog.vue';
-import { useQuasar } from 'quasar';
 
 export default defineComponent({
-  name: 'PesquisarServicosPage',
+  name: 'BeneficiarioPage',
   metaInfo: {
     requiresBeneficario: true,
   },
   setup() {
-    const $q = useQuasar();
-
-    const onPesquisar = () => {
-      $q.dialog({
-        component: PesquisarDialog,
-        componentProps: {
-          // list: servicos.value,
-        },
-        cancel: true,
-      });
-    };
-
     return {
       tipo,
-      onPesquisar,
     };
   },
 });

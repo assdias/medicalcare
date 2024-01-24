@@ -138,12 +138,13 @@
   </q-dialog>
 </template>
 
-<script>
+<script lang="ts">
 import { useDialogPluginComponent } from 'quasar';
 import { ref } from 'vue';
 import useNotify from 'src/composables/UseNotify';
 import useApi from 'src/composables/UseApi';
 import { useQuasar } from 'quasar';
+import type { ICidade, ISoftDelete } from 'src/interfaces';
 import { msg } from 'src/interfaces';
 
 export default {
@@ -206,7 +207,7 @@ export default {
         try {
           $q.loading.show({ message: 'Aguarde, excluindo...' });
 
-          await useApi('/cidade').remove(id);
+          await useApi<ISoftDelete>('/cidade').remove({ id: id });
           cidades.value.splice(index, 1);
 
           notifySuccess('Registro removido');
@@ -255,12 +256,17 @@ export default {
               cidade.value.nome = cidade.value.nome.toUpperCase();
 
               if (cidade.value.id > 0) {
-                await useApi('/cidade').patch(cidade.value.id, cidade.value);
+                await useApi<ICidade>('/cidade').patch({
+                  id: cidade.value.id,
+                  body: cidade.value,
+                });
                 cidades.value[cidadeIndex.value] = cidade.value;
                 cidadeIndex.value = -1;
                 notifySuccess('Registro atualizado');
               } else {
-                const data = await useApi('/cidade').post(cidade.value);
+                const data = await useApi<ICidade>('/cidade').post(
+                  cidade.value
+                );
                 cidades.value.push(data);
                 notifySuccess('Registro salvo');
               }

@@ -18,3 +18,7 @@ export function formatDecimal(val: number) {
     currency: 'BRL',
   }).format(val);
 }
+
+export function extractNumber(val: string) {
+  return val.match(/\d+/g);
+}

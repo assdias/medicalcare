@@ -25,7 +25,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'beneficiario',
         name: 'beneficiario',
-        component: () => import('pages/beneficiario/IndexPage.vue'),
+        component: () => import('pages/beneficiario/BeneficiarioPage.vue'),
       },
       {
         path: 'pesquisar',
@@ -45,7 +45,12 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'prestador',
         name: 'prestador',
-        component: () => import('pages/PrestadorPage.vue'),
+        component: () => import('pages/prestador/PrestadorPage.vue'),
+      },
+      {
+        path: 'servico',
+        name: 'servico',
+        component: () => import('pages/prestador/ServicoPage.vue'),
       },
     ],
     meta: {

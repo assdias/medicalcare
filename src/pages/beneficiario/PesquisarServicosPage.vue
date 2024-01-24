@@ -2,7 +2,13 @@
   <q-page-container>
     <q-page padding style="padding-top: 185px">
       <q-list>
-        <q-infinite-scroll @load="loadMoreItems" :offset="offset">
+        <q-item
+          v-if="items && items.length === 0"
+          class="tw-text-center tw-text-gray-400"
+        >
+          Nenhum registro.
+        </q-item>
+        <q-infinite-scroll @load="loadMoreItems" :offset="offset" v-else>
           <q-item
             v-for="(item, index) in items"
             :key="index"
@@ -21,7 +27,7 @@
               </q-item-label>
               <q-separator class="tw-my-3" />
               <q-item-section>
-                <div class="row tw-justify-end tw-space-x-5 tw-items-center">
+                <div class="flex flex-nowrap tw-space-x-5 tw-items-center">
                   <q-chip
                     size="lg"
                     outline
@@ -34,12 +40,12 @@
                     round
                     dense
                     color="positive"
-                    icon="phone"
+                    icon="mdi-information-variant"
                     class="tw-w-9 tw-h-9"
                     v-if="item.prestador.fone || item.prestador.whatsapp"
                   >
-                    <q-popup-proxy>
-                      <q-card>
+                    <q-popup-proxy class="tw-w-56">
+                      <q-card dense>
                         <q-bar>
                           <div>Contato</div>
 
@@ -59,10 +65,18 @@
                               :href="`tel:${item.prestador.fone}`"
                               target="_blank"
                             >
-                              <q-item-section>
-                                <q-item-label>{{
-                                  item.prestador.fone
-                                }}</q-item-label>
+                              <q-item-section avatar>
+                                <q-icon
+                                  color="primary"
+                                  name="phone"
+                                  class="tw-p-0"
+                                />
+                              </q-item-section>
+
+                              <q-item-section no-wrap>
+                                <q-item-label>
+                                  {{ formatCel(item.prestador.fone) }}
+                                </q-item-label>
                                 <q-item-label caption>Fone / Cel.</q-item-label>
                               </q-item-section>
                             </q-item>
@@ -70,9 +84,17 @@
                               clickable
                               v-ripple
                               v-if="item.prestador.whatsapp"
-                              :href="`tel:${item.prestador.whatsapp}`"
+                              :href="
+                                sendTextWhatsapp(
+                                  item.prestador.whatsapp,
+                                  item.nome
+                                )
+                              "
                               target="_blank"
                             >
+                              <q-item-section avatar>
+                                <q-icon color="primary" name="mdi-whatsapp" />
+                              </q-item-section>
                               <q-item-section>
                                 <q-item-label>{{
                                   item.prestador.whatsapp
@@ -89,7 +111,7 @@
                     round
                     dense
                     color="positive"
-                    icon="map"
+                    icon="mdi-google-maps"
                     class="tw-w-9 tw-h-9"
                     @click="onShowLocalizacao(item)"
                   />
@@ -97,11 +119,12 @@
                     round
                     dense
                     color="warning"
-                    icon="send"
+                    icon="playlist_add"
                     class="tw-w-9 tw-h-9"
                     size="18px"
+                    @click="onAddSolicitacao(item)"
                   >
-                    <q-tooltip class="bg-warning">Enviar solicitação</q-tooltip>
+                    <q-tooltip class="bg-warning">Adicionar na lista</q-tooltip>
                   </q-btn>
                 </div>
               </q-item-section>
@@ -130,8 +153,88 @@
               </q-btn>
               <q-toolbar-title>Pesquisar serviços</q-toolbar-title>
               <q-space />
-              <q-btn dense color="warning" round icon="mail" class="q-ml-md">
-                <q-badge color="red" floating>4</q-badge>
+              <q-btn
+                dense
+                color="warning"
+                round
+                icon="checklist"
+                class="q-ml-md"
+                :disable="solicitacaoStore.count == 0"
+              >
+                <q-badge color="red" rounded floating>{{
+                  solicitacaoStore.count
+                }}</q-badge>
+
+                <q-menu auto-close style="width: 300px">
+                  <q-card>
+                    <q-card-section class="q-pa-sm">
+                      <q-virtual-scroll
+                        class="tw-space-y-1"
+                        style="max-height: 300px"
+                        :items="solicitacaoStore.servicos"
+                        v-slot="{ item, index }"
+                      >
+                        <q-item
+                          :key="index"
+                          class="tw-border-t-2 tw-border-t-primary hover:tw-bg-gray-100"
+                        >
+                          <q-item-section>
+                            <q-item-label lines="1">
+                              <span class="text-weight-medium">{{
+                                item.nome
+                              }}</span>
+                            </q-item-label>
+                            <q-item-label caption class="row tw-justify-between"
+                              ><div>{{ item.prestador.name }}</div>
+                              <div>#{{ item.referencia }}</div>
+                            </q-item-label>
+                            <q-separator class="tw-my-3" />
+                            <q-item-section>
+                              <div
+                                class="flex flex-nowrap tw-space-x-4 tw-items-center"
+                              >
+                                <q-chip
+                                  size="md"
+                                  outline
+                                  color="negative"
+                                  text-color="white"
+                                  :label="formatCurrency(item.valor)"
+                                />
+                                <q-space />
+                                <q-btn
+                                  round
+                                  dense
+                                  color="negative"
+                                  icon="delete"
+                                  class="tw-w-9 tw-h-9"
+                                  @click="onDelete(item)"
+                                >
+                                </q-btn>
+                                <q-btn
+                                  round
+                                  dense
+                                  color="warning"
+                                  icon="send"
+                                  class="tw-w-9 tw-h-9"
+                                  @click="onEnviar(item)"
+                                />
+                              </div>
+                            </q-item-section>
+                          </q-item-section>
+                        </q-item>
+                      </q-virtual-scroll>
+                    </q-card-section>
+                    <q-separator />
+                    <q-card-actions align="center" class="q-pa-md">
+                      <q-btn
+                        color="warning"
+                        icon="send"
+                        label="Enviar Todos"
+                        @click="onEnviarTodos()"
+                      />
+                    </q-card-actions>
+                  </q-card>
+                </q-menu>
               </q-btn>
             </q-toolbar>
           </q-card-section>
@@ -269,10 +372,14 @@ import useNotify from 'src/composables/UseNotify';
 import useApi from 'src/composables/UseApi';
 import { useQuasar } from 'quasar';
 import { msg } from 'src/interfaces';
+import { formatCel, formatCPF } from 'src/utils/stringUtils';
 //import {formatDate,formatDateBR,} from 'src/utils/dateUtils';
-import { formatCurrency } from 'src/utils/numberUtils';
+import { formatCurrency, extractNumber } from 'src/utils/numberUtils';
 import { useAuthStore } from 'src/stores/auth-store';
 import LocalizacaoPrestadorDialog from 'src/components/LocalizacaoPrestadorDialog.vue';
+import { IServico, ICategoria, ICidade, IResultAbstract } from 'src/interfaces';
+import { useSolicitacaoStore } from 'src/stores/solicitacao-store';
+//import { storeToRefs } from 'pinia';
 
 interface IParams {
   cidade_id: number;
@@ -280,83 +387,8 @@ interface IParams {
   text: string;
 }
 
-export interface IResult {
-  itemsReceived: number;
-  curPage: number;
-  nextPage: number;
-  prevPage: null;
-  offset: number;
-  itemsTotal: number;
-  pageTotal: number;
-  items: IItems[];
-}
-
-export interface IItems {
-  id: number;
-  created_at: number;
-  categoria_id: number;
-  prestador_id: number;
-  referencia: string;
-  nome: string;
-  observacao: string;
-  valor: number;
-  vigencia_dt: number;
-  prestador: IPrestador;
-  categoria: ICategoria;
-}
-
-export interface IPrestador {
-  name: string;
-  email: string;
-  cidade_id: number;
-  cpf_cnpj: string;
-  whatsapp: string;
-  fone: string;
-  classificacao_id: number;
-  especialidade_id: IEspecialidadeId[][];
-  location: ILocation;
-  image: IImage;
-  cidade: ICidade;
-  logradouro: string;
-  logradouro_numero: string;
-  logradouro_complemento: string;
-  bairro: string;
-  cep: number;
-  classificacao: IClassificacao;
-}
-
-export interface IEspecialidadeId {
-  nome: string;
-}
-
-export interface ILocation {
-  type: string;
-  data: IData;
-}
-
-export interface IData {
-  lng: number;
-  lat: number;
-}
-
-export interface IImage {
-  url: string;
-}
-
-export interface ICidade {
-  id: number;
-  nome: string;
-  uf: string;
-}
-
-export interface IClassificacao {
-  id: number;
-  nome: string;
-}
-
-export interface ICategoria {
-  id: number | null;
-  nome: string;
+export interface IResult extends IResultAbstract {
+  items: IServico[];
 }
 
 export default {
@@ -369,7 +401,10 @@ export default {
     const loadingCidadeSelect = ref(false);
     const loadingCategoriaSelect = ref(false);
 
-    const { notifyError /*, notifySuccess*/ } = useNotify();
+    const { notifyError, notifySuccess } = useNotify();
+    const { user } = useAuthStore();
+
+    const solicitacaoStore = useSolicitacaoStore();
 
     const optionsCidades = ref<ICidade[]>([]);
     const optionsServerCidades = ref<ICidade[]>([]);
@@ -377,10 +412,10 @@ export default {
     const optionsCategorias = ref<ICategoria[]>([]);
     const optionsServerCategorias = ref<ICategoria[]>([]);
 
-    const result = ref<IResult | null>(null);
-    const items = ref<IItems[] | null>([]);
+    //const result = ref<IResult | null>(null);
+    const items = ref<IServico[] | null>([]);
     const params = ref<IParams>({
-      cidade_id: useAuthStore().user.cidade_id,
+      cidade_id: user.cidade_id,
       categoria_id: null,
       text: '',
     });
@@ -392,13 +427,12 @@ export default {
     const limit = 25; // Adjust the limit as needed
     const itemsTotal = ref(0);
     const itemsLoadTotal = ref(0);
-    const isLoadingMore = ref(false);
 
     const fetchCidade = async () => {
       $q.loadingBar.start();
       loadingCidadeSelect.value = true;
       optionsServerCidades.value = [];
-      await useApi('/cidade')
+      await useApi<ICidade>('/cidade')
         .get()
         .then((data: ICidade[]) => {
           optionsServerCidades.value = data;
@@ -417,7 +451,7 @@ export default {
       $q.loadingBar.start();
       loadingCategoriaSelect.value = true;
       optionsServerCategorias.value = [];
-      await useApi('/categoria')
+      await useApi<ICategoria>('/categoria')
         .get()
         .then((data: ICategoria[]) => {
           optionsServerCategorias.value = data;
@@ -471,7 +505,6 @@ export default {
       }
 
       try {
-        console.log('passou', itemsTotal.value, itemsLoadTotal.value);
         const result: IResult = (await fetchServico()) as IResult;
 
         itemsLoadTotal.value = result.items ? result.items.length : 0;
@@ -495,7 +528,7 @@ export default {
       $q.loadingBar.start();
       loadingTextInput.value = true;
 
-      result.value = null;
+      //result.value = null;
       const _text = `%${params.value.text
         .trim()
         .toLocaleUpperCase()
@@ -510,7 +543,7 @@ export default {
       };
 
       return new Promise((resolve) => {
-        useApi('/servico-searche')
+        useApi<IResult>('/servico-searche')
           .post(_params)
           .then((data: IResult) => {
             resolve(data);
@@ -536,7 +569,7 @@ export default {
 
     watch(params.value, handleInput);
 
-    const onShowLocalizacao = (item: IItems) => {
+    const onShowLocalizacao = (item: IServico) => {
       const _endereco = `${item.prestador.logradouro}, ${item.prestador.logradouro_numero} - ${item.prestador.bairro}, ${item.prestador.cidade.nome} - ${item.prestador.cidade.uf}, ${item.prestador.cep}`;
 
       $q.dialog({
@@ -552,11 +585,41 @@ export default {
       });
     };
 
+    const sendTextWhatsapp = (fone: string, servicoNome: string) => {
+      const eu = encodeURI(user?.name || 'Eu');
+      const cpf = formatCPF(user?.cpf_cnpj || '');
+      const servico = encodeURI(servicoNome);
+      const whats = extractNumber(fone);
+      return `https://api.whatsapp.com/send?phone=${whats}&text=Ol%C3%A1,%20meu%20nome%20%C3%A9%20*${eu}*%20CPF:%20${cpf}.%20Quero%20mais%20informa%C3%A7%C3%B5es%20sobre%20*${servico}*.`;
+    };
+
+    const onAddSolicitacao = (item: IServico) => {
+      solicitacaoStore.addItem(item);
+    };
+
+    const onDelete = (item: IServico) => {
+      solicitacaoStore.deleteItem(item);
+    };
+
+    const onEnviar = async (item: IServico) => {
+      await solicitacaoStore.enviarItem(item);
+    };
+
+    const onEnviarTodos = () => {
+      solicitacaoStore.enviarTodosItem();
+    };
+
     return {
+      onDelete,
+      onEnviar,
+      onEnviarTodos,
+      onAddSolicitacao,
+      solicitacaoStore,
+      sendTextWhatsapp,
+      formatCel,
       onShowLocalizacao,
       loadMoreItems,
       offset,
-      isLoadingMore,
       handleInput,
       showFiltro,
       disableText,
@@ -566,7 +629,6 @@ export default {
       breadcrumbCategoria,
       params,
       items,
-      itemsTotal,
       loading,
       loadingTextInput,
       loadingCidadeSelect,

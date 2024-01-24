@@ -130,12 +130,13 @@
   </q-dialog>
 </template>
 
-<script>
+<script lang="ts">
 import { useDialogPluginComponent } from 'quasar';
 import { ref } from 'vue';
 import useNotify from 'src/composables/UseNotify';
 import useApi from 'src/composables/UseApi';
 import { useQuasar } from 'quasar';
+import type { IClassificacao, ISoftDelete } from 'src/interfaces';
 import { msg } from 'src/interfaces';
 
 export default {
@@ -195,7 +196,7 @@ export default {
         try {
           $q.loading.show({ message: 'Aguarde, excluindo...' });
 
-          await useApi('/classificacao').remove(id);
+          await useApi<ISoftDelete>('/classificacao').remove({ id: id });
           classificacoes.value.splice(index, 1);
 
           notifySuccess('Registro removido');
@@ -243,18 +244,18 @@ export default {
               classificacao.value.nome = classificacao.value.nome.toUpperCase();
 
               if (classificacao.value.id > 0) {
-                await useApi('/classificacao').patch(
-                  classificacao.value.id,
-                  classificacao.value
-                );
+                await useApi<IClassificacao>('/classificacao').patch({
+                  id: classificacao.value.id,
+                  body: classificacao.value,
+                });
                 classificacoes.value[classificacaoIndex.value] =
                   classificacao.value;
                 classificacaoIndex.value = -1;
                 notifySuccess('Registro atualizado');
               } else {
-                const data = await useApi('/classificacao').post(
-                  classificacao.value
-                );
+                const data = await useApi<IClassificacao>(
+                  '/classificacao'
+                ).post(classificacao.value);
                 classificacoes.value.push(data);
                 notifySuccess('Registro salvo');
               }

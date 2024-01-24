@@ -126,12 +126,13 @@
   </q-dialog>
 </template>
 
-<script>
+<script lang="ts">
 import { useDialogPluginComponent } from 'quasar';
 import { ref } from 'vue';
 import useNotify from 'src/composables/UseNotify';
 import useApi from 'src/composables/UseApi';
 import { useQuasar } from 'quasar';
+import type { ICategoria, ISoftDelete } from 'src/interfaces';
 import { msg } from 'src/interfaces';
 
 export default {
@@ -150,6 +151,8 @@ export default {
   ],
 
   setup(props) {
+    // defineProps<{ categorias: ICategoria[] }>();
+
     const $q = useQuasar();
     // REQUIRED; must be called inside of setup()
     const { dialogRef, onDialogHide, /*onDialogOK,*/ onDialogCancel } =
@@ -165,11 +168,7 @@ export default {
     const loading = ref(false);
     const { notifyError, notifySuccess } = useNotify();
     const categoriaIndex = ref(-1);
-    const categoria = ref({
-      id: null,
-      nome: '',
-    });
-
+    const categoria = ref({ id: null, nome: '' });
     const categorias = ref(null);
     categorias.value = props.list;
 
@@ -191,7 +190,7 @@ export default {
         try {
           $q.loading.show({ message: 'Aguarde, excluindo...' });
 
-          await useApi('/categoria').remove(id);
+          await useApi<ISoftDelete>('/categoria').remove({ id: id });
           categorias.value.splice(index, 1);
 
           notifySuccess('Registro removido');
@@ -206,7 +205,6 @@ export default {
     return {
       loading,
       categorias,
-      props,
       categoria,
       tab,
       msg,
@@ -239,15 +237,17 @@ export default {
               categoria.value.nome = categoria.value.nome.toUpperCase();
 
               if (categoria.value.id > 0) {
-                await useApi('/categoria').patch(
-                  categoria.value.id,
-                  categoria.value
-                );
+                await useApi<ICategoria>('/categoria').patch({
+                  id: categoria.value.id,
+                  body: categoria.value,
+                });
                 categorias.value[categoriaIndex.value] = categoria.value;
                 categoriaIndex.value = -1;
                 notifySuccess('Registro atualizado');
               } else {
-                const data = await useApi('/categoria').post(categoria.value);
+                const data = await useApi<ICategoria>('/categoria').post(
+                  categoria.value
+                );
                 categorias.value.push(data);
                 notifySuccess('Registro salvo');
               }

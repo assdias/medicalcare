@@ -79,6 +79,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth-store';
 import useNotify from 'src/composables/UseNotify';
 import { tipo } from 'src/interfaces';
+import { Console } from 'console';
 
 export default defineComponent({
   name: 'IndexPage',

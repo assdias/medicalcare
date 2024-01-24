@@ -128,12 +128,13 @@
   </q-dialog>
 </template>
 
-<script>
+<script lang="ts">
 import { useDialogPluginComponent } from 'quasar';
 import { ref } from 'vue';
 import useNotify from 'src/composables/UseNotify';
 import useApi from 'src/composables/UseApi';
 import { useQuasar } from 'quasar';
+import type { IEspecialidade, ISoftDelete } from 'src/interfaces';
 import { msg } from 'src/interfaces';
 
 export default {
@@ -193,7 +194,7 @@ export default {
         try {
           $q.loading.show({ message: 'Aguarde, excluindo...' });
 
-          await useApi('/especialidade').remove(id);
+          await useApi<ISoftDelete>('/especialidade').remove({ id: id });
           especialidades.value.splice(index, 1);
 
           notifySuccess('Registro removido');
@@ -241,18 +242,18 @@ export default {
               especialidade.value.nome = especialidade.value.nome.toUpperCase();
 
               if (especialidade.value.id > 0) {
-                await useApi('/especialidade').patch(
-                  especialidade.value.id,
-                  especialidade.value
-                );
+                await useApi<IEspecialidade>('/especialidade').patch({
+                  id: especialidade.value.id,
+                  body: especialidade.value,
+                });
                 especialidades.value[especialidadeIndex.value] =
                   especialidade.value;
                 especialidadeIndex.value = -1;
                 notifySuccess('Registro atualizado');
               } else {
-                const data = await useApi('/especialidade').post(
-                  especialidade.value
-                );
+                const data = await useApi<IEspecialidade>(
+                  '/especialidade'
+                ).post(especialidade.value);
                 especialidades.value.push(data);
                 notifySuccess('Registro salvo');
               }

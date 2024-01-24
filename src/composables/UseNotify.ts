@@ -1,10 +1,8 @@
-import { useQuasar } from 'quasar';
+import { Notify } from 'quasar';
 
 export default function useNotify() {
-  const $q = useQuasar();
-
-  const notifySuccess = (message, caption = '') => {
-    $q.notify({
+  const notifySuccess = (message: string, caption = '') => {
+    Notify.create({
       type: 'positive',
       //position: 'top-right',
       closeBtn: true,
@@ -15,7 +13,7 @@ export default function useNotify() {
   };
 
   const notifyError = (message, caption = '') => {
-    $q.notify({
+    Notify.create({
       type: 'negative',
       //position: 'top-right',
       progress: true,
@@ -25,7 +23,7 @@ export default function useNotify() {
   };
 
   const notifyWarning = (message, caption = '') => {
-    $q.notify({
+    Notify.create({
       type: 'warning',
       //position: 'top-right',
       progress: true,
@@ -35,7 +33,7 @@ export default function useNotify() {
   };
 
   const notifyInfo = (message, caption = '', spinner = false) => {
-    $q.notify({
+    Notify.create({
       type: 'info',
       closeBtn: true,
       spinner: spinner,

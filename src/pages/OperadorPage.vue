@@ -92,7 +92,7 @@
 <script lang="ts">
 import { defineComponent /*, onMounted, ref */ } from 'vue';
 import { useQuasar } from 'quasar';
-import { tipo } from 'src/interfaces';
+import { ICategoria, ICidade, IClassificacao, tipo } from 'src/interfaces';
 import CidadadeDialog from 'src/components/CidadadeDialog.vue';
 import CategoriaDialog from 'src/components/CategoriaDialog.vue';
 import ClassificacaoDialog from 'src/components/ClassificacaoDialog.vue';
@@ -116,7 +116,9 @@ export default defineComponent({
       async onShowEspecialidade() {
         try {
           $q.loading.show();
-          const especialidades = await useApi('/especialidade').get();
+          const especialidades = await useApi<IEspecialidade>(
+            '/especialidade'
+          ).get();
 
           $q.dialog({
             component: EspecialidadeDialog,
@@ -138,7 +140,9 @@ export default defineComponent({
       async onShowClassificacao() {
         try {
           $q.loading.show();
-          const classificacoes = await useApi('/classificacao').get();
+          const classificacoes = await useApi<IClassificacao>(
+            '/classificacao'
+          ).get();
 
           $q.dialog({
             component: ClassificacaoDialog,
@@ -160,7 +164,7 @@ export default defineComponent({
       async onShowCategoria() {
         try {
           $q.loading.show();
-          const categorias = await useApi('/categoria').get();
+          const categorias = await useApi<ICategoria>('/categoria').get();
 
           $q.dialog({
             component: CategoriaDialog,
@@ -182,7 +186,7 @@ export default defineComponent({
       async onShowCidade() {
         try {
           $q.loading.show();
-          const cidades = await useApi('/cidade').get();
+          const cidades = await useApi<ICidade>('/cidade').get();
 
           $q.dialog({
             component: CidadadeDialog,

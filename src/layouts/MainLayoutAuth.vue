@@ -71,7 +71,7 @@
             @click="handleUpload()"
           />
           <q-form autofocus greedy>
-            <div class="tw-space-y-2">
+            <div class="tw-space-y-1">
               <div class="row no-wrap items-center">
                 <div class="col">
                   <q-input
@@ -115,17 +115,21 @@
                 <div class="col">
                   <q-input
                     v-bind="{ ...$themeInput }"
+                    :clearable="false"
                     v-model="body.fone"
                     label="Fone"
                     type="tel"
+                    v-mask="['(##) ####-####', '(##) #####-####']"
                   />
                 </div>
                 <div class="col">
                   <q-input
                     v-bind="{ ...$themeInput }"
+                    :clearable="false"
                     v-model="body.whatsapp"
                     label="Whatsapp"
                     type="tel"
+                    v-mask="['(##) ####-####', '(##) #####-####']"
                   />
                 </div>
               </div>
@@ -186,26 +190,30 @@ import { useAuthStore } from 'src/stores/auth-store';
 import useNotify from 'src/composables/UseNotify';
 import useApi from 'src/composables/UseApi';
 import { useRouter } from 'vue-router';
-import { tipo } from 'src/interfaces';
+import { tipo, IUser } from 'src/interfaces';
 import { removerAcentos } from 'src/utils/stringUtils';
+import { mask } from 'vue-the-mask';
 
 export default defineComponent({
   name: 'MainLayoutAuth',
   metaInfo: {
     requiresAuth: true,
   },
+  directives: { mask },
   setup() {
     const router = useRouter();
     const user = useAuthStore().user;
     const { notifyError, notifySuccess, notifyInfo } = useNotify();
     const loading = ref(false);
-    const imageFile = ref(null);
+    const imageFile = ref('');
     const body = ref({
       name: '',
       password: '',
       cpf_cnpj: '',
       cidade_id: 0,
       image: '',
+      fone: '',
+      whatsapp: '',
     });
 
     const handleUpload = () => {
@@ -237,19 +245,20 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      imageFile.value = user.image && user.image.url ? user.image.url : '';
+      if (user) {
+        imageFile.value = user.image && user.image.url ? user.image.url : '';
 
-      body.value.name = user.name;
-      body.value.password = '';
-      body.value.cpf_cnpj = user.cpf_cnpj;
-      body.value.cidade_id = user.cidade_id;
-      body.value.fone = user.fone;
-      body.value.whatsapp = user.whatsapp;
+        body.value.name = user.name;
+        body.value.password = '';
+        body.value.cpf_cnpj = user.cpf_cnpj;
+        body.value.cidade_id = user.cidade_id;
+        body.value.fone = user.fone;
+        body.value.whatsapp = user.whatsapp;
+      }
     });
 
     const imageHeader = computed(() => {
-      const userImage = useAuthStore().user.image;
-      return userImage && userImage.url ? userImage.url : '';
+      return user && user.image ? user.image.url : '';
     });
 
     const handleUserSave = async () => {
@@ -258,8 +267,14 @@ export default defineComponent({
 
         body.value.name = body.value.name.toUpperCase();
 
-        const data = await useApi('/user').patch(user.id, body.value);
-        useAuthStore().updateUser(data);
+        if (user) {
+          const data = await useApi<IUser>('/user').patch({
+            id: user.id,
+            body: body.value,
+          });
+
+          useAuthStore().updateUser(data);
+        }
 
         notifySuccess('Registro atualizado.');
       } catch (error: any) {
@@ -276,10 +291,12 @@ export default defineComponent({
     };
 
     const showHeaderDetail = computed(() => {
-      return router.currentRoute.value.name
-        ?.toString()
-        .toLowerCase()
-        .includes(removerAcentos(user.tipo).toLowerCase());
+      return user
+        ? router.currentRoute.value.name
+            ?.toString()
+            .toLowerCase()
+            .includes(removerAcentos(user.tipo).toLowerCase())
+        : '';
     });
 
     return {

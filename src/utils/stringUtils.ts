@@ -1,9 +1,10 @@
 import { format } from 'quasar';
 const { pad } = format;
 
-export function geraNumDocumento(): string {
+export function geraNumDocumento(prefixo = ''): string {
   const numero = Math.floor(Math.random() * 65536);
-  return pad(numero.toString(), 6);
+  const numStr = pad(numero.toString(), 6);
+  return prefixo ? `${prefixo}-${numStr}` : numStr;
 }
 
 export function formatNumDocumento(

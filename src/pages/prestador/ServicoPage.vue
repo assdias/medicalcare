@@ -261,7 +261,7 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      await loadMoreItems(0, true);
+      await loadMoreItems();
     });
 
     const loadMoreItems = async (index, done) => {

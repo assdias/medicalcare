@@ -113,6 +113,7 @@
                     color="positive"
                     icon="mdi-google-maps"
                     class="tw-w-9 tw-h-9"
+                    v-show="item.prestador.logradouro"
                     @click="onShowLocalizacao(item)"
                   />
                   <q-btn

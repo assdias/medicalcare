@@ -291,11 +291,19 @@ export default defineComponent({
     };
 
     const showHeaderDetail = computed(() => {
+      console.log(router.currentRoute.value.name);
+      /*
       return user
         ? router.currentRoute.value.name
             ?.toString()
             .toLowerCase()
             .includes(removerAcentos(user.tipo).toLowerCase())
+        : '';
+        */
+
+      return user
+        ? router.currentRoute.value.name?.toString().toLowerCase() ==
+            removerAcentos(user.tipo).toLowerCase()
         : '';
     });
 

@@ -48,6 +48,7 @@ export const useSolicitacaoStore = defineStore(
 
       await useApi<ISolicitacao>('/solicitacao')
         .post({
+          beneficiario_id: user?.id,
           prestador_id: item.prestador_id,
           servico_id: item.id,
           protocolo: _protocolo,
@@ -109,7 +110,7 @@ export const useSolicitacaoStore = defineStore(
   },
   {
     persist: {
-      key: 'medicalcareServico268e10d02d64b538728f8b521640dd2',
+      key: 'medicalcareSolicitaca268e10d02d64b538728f8b521640dd2',
       paths: ['servicos'],
       storage: {
         getItem(key: string) {

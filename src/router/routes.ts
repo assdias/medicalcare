@@ -52,6 +52,12 @@ const routes: RouteRecordRaw[] = [
         name: 'servico',
         component: () => import('pages/prestador/ServicoPage.vue'),
       },
+      {
+        path: 'prestador-solicitacao',
+        name: 'prestador-solicitacao',
+        component: () =>
+          import('pages/prestador/PrestadorSolicitacoesPage.vue'),
+      },
     ],
     meta: {
       requiresAuth: true,

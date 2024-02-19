@@ -14,6 +14,7 @@
               clickable
               v-ripple
               class="bg-primary tw-text-gray-100 tw-mb-5"
+              to="/prestador-solicitacao"
             >
               <q-item-section avatar>
                 <q-icon name="send" />

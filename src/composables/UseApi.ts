@@ -19,7 +19,7 @@ interface ApiConfig {
 }
 
 interface RequestOptions {
-  query?: string;
+  query?: any;
   id?: number | string;
   body?: any;
 }
@@ -89,10 +89,10 @@ export default function useApi<T>(endPoint: string) {
   const patch = async ({ id, body }: RequestOptions) => {
     try {
       config();
-
-      const params = `${endPoint}/${id}`;
-
-      const { data }: ApiResponse<T> = await api.patch(params, body);
+      const { data }: ApiResponse<T> = await api.patch(
+        `${endPoint}/${id}`,
+        body
+      );
       return data;
     } catch (error: any) {
       handleApiError(error);
@@ -103,15 +103,10 @@ export default function useApi<T>(endPoint: string) {
     try {
       config();
 
-      let params: string;
+      const { data }: ApiResponse<T> = await api.get(endPoint, {
+        params: query,
+      });
 
-      if (!query || query == undefined || query == '') {
-        params = endPoint;
-      } else {
-        params = `${endPoint}/${query}`;
-      }
-
-      const { data }: ApiResponse<T> = await api.get(params);
       return data;
     } catch (error: any) {
       handleApiError(error);

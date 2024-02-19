@@ -2,8 +2,15 @@ import { defineStore } from 'pinia';
 import useApi from 'src/composables/UseApi';
 import { LocalStorage } from 'quasar';
 import { getLocation } from 'src/utils/geolocation';
-import { tipo, IUser, IToken } from 'src/interfaces';
-import useNotify from 'src/composables/UseNotify';
+import {
+  tipo,
+  IUser,
+  IToken,
+  IOperador,
+  IBeneficiario,
+  IPrestador,
+} from 'src/interfaces';
+// import useNotify from 'src/composables/UseNotify';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -103,6 +110,22 @@ export const useAuthStore = defineStore('auth', {
         .catch((e) => {
           //useNotify().notifyError(e.message); //, JSON.stringify(e));
         });*/
+    },
+
+    async getAllUser(_tipo: tipo) {
+      const param = {
+        query: { tipo: _tipo },
+      };
+
+      if (_tipo == tipo.OPERADOR) {
+        return await useApi<IOperador>('/user').get({ query: { tipo: _tipo } });
+      } else if (_tipo == tipo.PRESTADOR) {
+        return await useApi<IPrestador>('/user').get(param);
+      } else if (_tipo == tipo.BENEFICIARIO) {
+        return await useApi<IBeneficiario>('/user').get(param);
+      } else {
+        return [];
+      }
     },
 
     setToken(authToken: string) {

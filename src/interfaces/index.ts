@@ -73,6 +73,10 @@ export interface IPrestador extends IUser {
   classificacao: IClassificacao;
 }
 
+export type IOperador = IUser;
+
+export type IBeneficiario = IUser;
+
 export interface IEspecialidadeId {
   nome: string;
 }
@@ -116,7 +120,7 @@ export interface ISolicitacao {
   id: number | null;
   created_at: Date;
   prestador_id: number;
-  user_id: number;
+  beneficiario_id: number;
   servico_id: number;
   protocolo: string;
   solicitacao_dt: Date;
@@ -127,4 +131,9 @@ export interface ISolicitacao {
   categoria_id: number;
   especialidade_id: number;
   delete_at: Date;
+  cidade: ICidade;
+  categoria: ICategoria;
+  operador: IOperador;
+  beneficiario: IBeneficiario;
+  servico: IServico;
 }
